@@ -1,0 +1,3 @@
+(ns dandy.core)
+
+(.log js/console "Hello There")
