@@ -1,4 +1,8 @@
-target/
-resources/public/cljs/
+target
+resources/public/cljs
 figwheel_server.log
-*.clj~
+*~
+\#*\#
+.\#*
+.nrepl-port
+out
