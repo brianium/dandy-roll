@@ -3,6 +3,7 @@
   :url "https://github.com/brianium/dandy"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :global-vars {*warn-on-reflection* true}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.293"]]
   :plugins [[lein-figwheel "0.5.8"]
