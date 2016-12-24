@@ -16,8 +16,12 @@
      (make-deferrable deferred promise)))
   ([deferred, promise]
    (reify IDeferrable
-     (resolve [_ value] (.resolve deferred value))
-     (reject [_] (.reject deferred))
+     (resolve [_ value]
+       (.resolve deferred value)
+       (make-deferrable deferred promise))
+     (reject [_]
+       (.reject deferred)
+       (make-deferrable deferred promise))
      (then [_ fn]
        (make-deferrable deferred (.then promise fn))))))
 
