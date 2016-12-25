@@ -4,6 +4,9 @@
 
 (defonce type-pattern #"function ([\w]+)")
 
+;; This may need to be refined - should cover MOST bases
+(defonce url-pattern #"(?:https?://)?([^/]+)")
+
 (defn- type-str
   "Returns the type of x as a string"
   [x]
@@ -19,6 +22,17 @@
     (listen image "load" #(resolve promise image))
     (set! (.-src image) (.-result reader))))
 
+(defn- set-src!
+  "Sets the src attribute of the image. If it is determined
+   that the source domain and the current domain are different,
+   then the crossOrigin property of the image will be set to 'Anonymous'"
+  [img src-url]
+  (let [host (.. js/window -location -hostname)
+        url-host (second (re-find url-pattern src-url))]
+    (if (not= host url-host)
+      (set! (.-crossOrigin img) "Anonymous"))
+    (set! (.-src img) src-url)))
+
 ;; Dispatch loading strategy by type. All load methods should return a promise
 (defmulti load-image type-str)
 
@@ -32,7 +46,7 @@
   (let [p (promise)
         img (js/Image.)]
     (listen img "load" #(resolve p img))
-    (set! (.-src img) url)
+    (set-src! img url)
     p))
 
 ;; A File argument leverages a FileReader to create an image
