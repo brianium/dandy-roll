@@ -1,7 +1,8 @@
 (ns dandy.core
   (:require [dandy.promise :refer [then]]
             [dandy.canvas :refer [get-canvas data-url]]
-            [dandy.load :refer [load-image]]))
+            [dandy.load :refer [load-image]]
+            [goog.dom :as gdom]))
 
 (defn with-image
   [resource draw]
@@ -18,6 +19,15 @@
     (.restore ctx)
     canvas))
 
+(defn upper-left [img canvas]
+  (let [ctx (.getContext canvas "2d")
+        x 10
+        y 10]
+    (.save ctx)
+    (.drawImage ctx img x y)
+    (.restore ctx)
+    canvas))
+
 (defn draw-image [img canvas]
   (let [ctx (.getContext canvas "2d")]
     (set! (.-width canvas) (.-width img))
@@ -26,13 +36,23 @@
     canvas))
 
 (defn watermark
-  [resource handler]
+  [resource handler1 handler2 commit]
   (let [canvas (get-canvas)
         p (load-image resource)]
     (-> (then p #(draw-image %1 canvas))
-        (handler canvas)
+        (handler1 canvas)
+        (handler2 canvas)
         (then data-url)
-        (then (.-log js/console)))))
+        (commit))))
+
+(defn append [promise]
+  (then promise (fn [data-url]
+                  (let [img (js/Image.)
+                        body (.-body js/document)]
+                    (set! (.-src img) data-url)
+                    (gdom/appendChild body img)))))
 
 (watermark "http://placehold.it/310x310"
-  (with-image "http://placehold.it/155x155" lower-right))
+  (with-image "http://placehold.it/155x155" lower-right)
+  (with-image "http://placehold.it/50x50" upper-left)
+  append)
