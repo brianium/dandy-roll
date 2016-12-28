@@ -4,11 +4,17 @@
             [dandy.load :refer [load-image]]
             [goog.dom :as gdom]))
 
+(defrecord DeferredDraw [canvas promise])
+
+(defn defer-draw [canvas promise]
+  (->DeferredDraw canvas promise))
+
 (defn with-image
   [resource draw]
-  (fn [promise canvas]
+  (fn [{:keys [promise canvas]}]
     (-> (then promise #(load-image resource))
-        (then (fn [img] (draw img canvas))))))
+        (then (fn [img] (draw img canvas)))
+        (as-> promise (defer-draw canvas promise)))))
 
 (defn lower-right [img canvas]
   (let [ctx (.getContext canvas "2d")
@@ -28,7 +34,7 @@
     (.restore ctx)
     canvas))
 
-(defn draw-image [img canvas]
+(defn draw-image [canvas img]
   (let [ctx (.getContext canvas "2d")]
     (set! (.-width canvas) (.-width img))
     (set! (.-height canvas) (.-height img))
@@ -36,12 +42,16 @@
     canvas))
 
 (defn watermark
-  [resource handler1 handler2 commit]
+  [resource & fns]
   (let [canvas (get-canvas)
-        p (load-image resource)]
-    (-> (then p #(draw-image %1 canvas))
-        (handler1 canvas)
-        (handler2 canvas)
+        defer (partial defer-draw canvas)
+        commit (last fns)
+        handler (apply comp (pop (vec fns)))]
+    (-> (load-image resource)
+        (then (partial draw-image canvas))
+        (defer)
+        (handler)
+        (:promise)
         (then data-url)
         (commit))))
 
