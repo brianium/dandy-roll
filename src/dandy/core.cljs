@@ -45,22 +45,23 @@
   [resource & fns]
   (let [canvas (get-canvas)
         defer (partial defer-draw canvas)
-        commit (last fns)
-        handler (apply comp (pop (vec fns)))]
+        handler (apply comp (reverse fns))]
     (-> (load-image resource)
         (then (partial draw-image canvas))
         (defer)
-        (handler)
-        (:promise)
-        (then data-url)
-        (commit))))
+        (handler))))
 
-(defn append [promise]
-  (then promise (fn [data-url]
-                  (let [img (js/Image.)
-                        body (.-body js/document)]
-                    (set! (.-src img) data-url)
-                    (gdom/appendChild body img)))))
+(defn make-image [url]
+  (let [img (js/Image.)]
+    (set! (.-src img) url)
+    img))
+
+(defn append [{:keys [promise canvas]}]
+  (-> (then promise data-url)
+    (then make-image)
+    (then (fn [img]
+            (let [body (.-body js/document)]
+              (gdom/appendChild body img))))))
 
 (watermark "http://placehold.it/310x310"
   (with-image "http://placehold.it/155x155" lower-right)
