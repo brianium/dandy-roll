@@ -2,44 +2,48 @@
   (:require [dandy.promise :refer [then]]
             [dandy.canvas :refer [get-canvas data-url]]
             [dandy.load :refer [load-image]]
+            [dandy.draw :refer [defer-draw draw-image]]
             [goog.dom :as gdom]))
 
-(defrecord DeferredDraw [canvas promise])
+(defprotocol Drawable
+  "Represents a resource being drawn on canvas"
+  (draw [this canvas x y] "Draws the resource to a canvas")
+  (width [this] "Returns the width of the drawable item")
+  (height [this] "Returns the height of the drawable item"))
 
-(defn defer-draw [canvas promise]
-  (->DeferredDraw canvas promise))
+;; Define a record representing an image being
+;; applied as a watermark
+(defrecord WatermarkImage [img]
+  Drawable
+  (draw [_ canvas x y]
+    (-> (.getContext canvas "2d")
+        (.drawImage img x y)))
+  (width [_] (.-width img))
+  (height [_] (.-height img)))
+
+(defn safe-draw [canvas draw-fn]
+  (let [ctx (.getContext canvas "2d")]
+    (.save ctx)
+    (draw-fn canvas)
+    (.restore ctx)
+    canvas))
 
 (defn with-image
   [resource draw]
   (fn [{:keys [promise canvas]}]
     (-> (then promise #(load-image resource))
-        (then (fn [img] (draw img canvas)))
+      (then (fn [img] (draw (->WatermarkImage img) canvas)))
         (as-> promise (defer-draw canvas promise)))))
 
-(defn lower-right [img canvas]
+(defn lower-right [drawable canvas]
   (let [ctx (.getContext canvas "2d")
-        x (- (.-width canvas) (+ 10 (.-width img)))
-        y (- (.-height canvas) (+ 10 (.-height img)))]
-    (.save ctx)
-    (.drawImage ctx img x y)
-    (.restore ctx)
-    canvas))
+        x (- (.-width canvas) (+ 10 (width drawable)))
+        y (- (.-height canvas) (+ 10 (height drawable)))]
+    (safe-draw canvas #(draw drawable canvas x y))))
 
-(defn upper-left [img canvas]
-  (let [ctx (.getContext canvas "2d")
-        x 10
-        y 10]
-    (.save ctx)
-    (.drawImage ctx img x y)
-    (.restore ctx)
-    canvas))
-
-(defn draw-image [canvas img]
+(defn upper-left [drawable canvas]
   (let [ctx (.getContext canvas "2d")]
-    (set! (.-width canvas) (.-width img))
-    (set! (.-height canvas) (.-height img))
-    (.drawImage ctx img 0 0)
-    canvas))
+    (safe-draw canvas #(draw drawable canvas 10 10))))
 
 (defn watermark
   [resource & fns]
