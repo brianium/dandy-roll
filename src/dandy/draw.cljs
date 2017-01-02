@@ -5,24 +5,45 @@
 (defprotocol Drawable
   "Represents a resource being drawn on canvas"
   (draw [this canvas x y options] "Draws the resource to a canvas")
-  (width [this] "Returns the width of the drawable item")
-  (height [this] "Returns the height of the drawable item"))
+  (width [this canvas] "Returns the width of the drawable item")
+  (height [this canvas] "Returns the height of the drawable item"))
 
 ;; Define a record representing an image being
 ;; applied as a watermark
 (defrecord WatermarkImage [img]
   Drawable
-  (draw
-    [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
+  (draw [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
     (as-> (.getContext canvas "2d") ctx
           (do (set! (.-globalAlpha ctx) alpha) ctx)
           (.drawImage ctx img x y)))
-  (width [_] (.-width img))
-  (height [_] (.-height img)))
+  (width [_ _] (.-width img))
+  (height [_ _] (.-height img)))
 
-(defn make-watermark-image
+(defn make-image
   [img]
   (->WatermarkImage img))
+
+(defrecord WatermarkText [text font fill]
+  Drawable
+  (draw [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
+    (as-> (.getContext canvas "2d") ctx
+          (do
+            (set! (.-globalAlpha ctx) alpha)
+            (set! (.-fillStyle ctx) fill)
+            (set! (.-font ctx) font)
+            ctx)
+          (.fillText ctx text x y)))
+  (width [_ canvas]
+    (as-> (.getContext canvas "2d") ctx
+          (do
+            (set! (.-font ctx) font)
+            (.measureText ctx text))
+          (.-width ctx)))
+  (height [_ _] 20))
+
+(defn make-text
+  [text font fill]
+  (->WatermarkText text font fill))
 
 (defn safe-draw
   "Calls the context save function before executing the draw function.
