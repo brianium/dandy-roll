@@ -6,7 +6,8 @@
   "Represents a resource being drawn on canvas"
   (draw [this canvas x y options] "Draws the resource to a canvas")
   (width [this canvas] "Returns the width of the drawable item")
-  (height [this canvas] "Returns the height of the drawable item"))
+  (height [this canvas] "Returns the height of the drawable item")
+  (offset-y [this] "Returns a default y offset."))
 
 ;; Define a record representing an image being
 ;; applied as a watermark
@@ -17,33 +18,39 @@
           (do (set! (.-globalAlpha ctx) alpha) ctx)
           (.drawImage ctx img x y)))
   (width [_ _] (.-width img))
-  (height [_ _] (.-height img)))
+  (height [_ _] (.-height img))
+  (offset-y [_] 10))
 
-(defn make-image
-  [img]
-  (->WatermarkImage img))
+(defn- make-font [size family]
+  (str size "px " family))
 
-(defrecord WatermarkText [text font fill]
+(defrecord WatermarkText [text font-size-px font-family fill]
   Drawable
   (draw [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
     (as-> (.getContext canvas "2d") ctx
           (do
             (set! (.-globalAlpha ctx) alpha)
             (set! (.-fillStyle ctx) fill)
-            (set! (.-font ctx) font)
+            (set! (.-font ctx) (make-font font-size-px font-family))
+            (set! (.-textBaseline ctx) "middle")
             ctx)
           (.fillText ctx text x y)))
   (width [_ canvas]
     (as-> (.getContext canvas "2d") ctx
           (do
-            (set! (.-font ctx) font)
+            (set! (.-font ctx) (make-font font-size-px font-family))
             (.measureText ctx text))
           (.-width ctx)))
-  (height [_ _] 20))
+  (height [_ _] (/ 2 font-size-px))
+  (offset-y [_] 20))
+
+(defn make-image
+  [img]
+  (->WatermarkImage img))
 
 (defn make-text
-  [text font fill]
-  (->WatermarkText text font fill))
+  [text font-size font-family fill]
+  (->WatermarkText text font-size font-family fill))
 
 (defn safe-draw
   "Calls the context save function before executing the draw function.

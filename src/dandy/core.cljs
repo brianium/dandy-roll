@@ -22,7 +22,9 @@
   [canvas drawable]
   (-
     (.-height canvas)
-    (+ 10 (draw/height drawable canvas))))
+    (+
+      (draw/offset-y drawable)
+      (draw/height drawable canvas))))
 
 ;;;; Bundled Draw Functions
 
@@ -52,7 +54,7 @@
      (let [x (offset-width canvas drawable)]
        (draw/safe-draw
          canvas
-         #(draw/draw drawable canvas x 10 options)))))
+         #(draw/draw drawable canvas x (draw/offset-y drawable) options)))))
   ([drawable canvas]
    (apply
      (upper-right {})
@@ -63,7 +65,7 @@
    (fn [drawable canvas]
      (draw/safe-draw
        canvas
-       #(draw/draw drawable canvas 10 10 options))))
+       #(draw/draw drawable canvas 10 (draw/offset-y drawable) options))))
   ([drawable canvas]
    (apply
      (upper-left {})
@@ -104,9 +106,9 @@
         (as-> promise (draw/defer canvas promise)))))
 
 (defn with-text
-  [text font fill draw]
+  [text font-size font-family fill draw]
   (fn [{:keys [promise canvas]}]
-    (-> (then promise #(draw (draw/make-text text font fill) canvas))
+    (-> (then promise #(draw (draw/make-text text font-size font-family fill) canvas))
         (as-> promise (draw/defer canvas promise)))))
 
 (defn append
@@ -137,10 +139,10 @@
         (defer)
         (handler))))
 
-(watermark "http://placehold.it/310x310"
-  (with-text "Oh Hai" "28px Helvetica" "#fff" lower-right)
-  (with-text "Oh Hai" "28px Helvetica" "#fff" lower-left)
-  (with-text "Oh Hai" "28px Helvetica" "#fff" upper-right)
-  (with-text "Oh Hai" "28px Helvetica" "#fff" upper-left)
-  (with-text "Oh Hai" "28px Helvetica" "#fff" center)
+(watermark "/target.jpeg"
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-right)
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-left)
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-right)
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-left)
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" center)
   (append (.-body js/document)))
