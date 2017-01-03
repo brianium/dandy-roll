@@ -141,8 +141,8 @@
 
 (watermark "/target.jpeg"
   (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-right)
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-left)
+  (with-image "/mark.jpeg" (lower-left { :alpha 0.5 }))
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-right)
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-left)
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" center)
+  (with-text "Oh Hai" 28 "Helvetica" "#fff" (center { :alpha 0.5 }))
   (append (.-body js/document)))
