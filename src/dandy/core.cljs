@@ -35,66 +35,45 @@
 ;;; The following functions should serve as examples
 ;;; and should cover many common use cases
 
-(defn lower-right
-  ([options]
-   (fn [drawable canvas]
-     (let [x (offset-width canvas drawable)
-           y (offset-height canvas drawable)]
-       (draw/safe-draw
-         canvas
-         #(draw/draw drawable canvas x y options)))))
-  ([drawable canvas]
-   (apply
-     (lower-right {})
-     [drawable canvas])))
+(defn drawer
+  "A function that returns a generic draw function.
+   
+   Accepts two arguments: a function for resolving x placement
+   and a function for resolving y placement. Both functions are
+   passed an HTMLCanvasElement and a Drawable record.
 
-(defn upper-right
-  ([options]
-   (fn [drawable canvas]
-     (let [x (offset-width canvas drawable)]
-       (draw/safe-draw
-         canvas
-         #(draw/draw drawable canvas x (draw/offset-y drawable) options)))))
-  ([drawable canvas]
-   (apply
-     (upper-right {})
-     [drawable canvas])))
+   The returned function can be passed directly to a handler or
+   can be invoked with a map to return a configured draw function"
+  [x-fn y-fn]
+  (fn draw-fn
+    ([options]
+     (fn [drawable canvas]
+       (let [x (x-fn canvas drawable)
+             y (y-fn canvas drawable)]
+         (draw/safe-draw
+           canvas
+           #(draw/draw drawable canvas x y options)))))
+    ([drawable canvas]
+     (apply
+       (draw-fn {})
+       [drawable canvas]))))
 
-(defn upper-left
-  ([options]
-   (fn [drawable canvas]
-     (draw/safe-draw
-       canvas
-       #(draw/draw drawable canvas 10 (draw/offset-y drawable) options))))
-  ([drawable canvas]
-   (apply
-     (upper-left {})
-     [drawable canvas])))
+(def lower-right
+  (drawer offset-width offset-height))
 
-(defn lower-left
-  ([options]
-   (fn [drawable canvas]
-     (let [y (offset-height canvas drawable)]
-       (draw/safe-draw
-         canvas
-         #(draw/draw drawable canvas 10 y options)))))
-  ([drawable canvas]
-   (apply
-     (lower-left {})
-     [drawable canvas])))
+(def upper-right
+  (drawer offset-width #(draw/offset-y %2)))
 
-(defn center
-  ([options]
-   (fn [drawable canvas]
-     (let [x (/ (- (.-width canvas) (draw/width drawable canvas)) 2)
-           y (/ (- (.-height canvas) (draw/height drawable canvas)) 2)]
-       (draw/safe-draw
-         canvas
-         #(draw/draw drawable canvas x y options)))))
-  ([drawable canvas]
-   (apply
-     (center {})
-     [drawable canvas])))
+(def upper-left
+  (drawer #(identity 10) #(draw/offset-y %2)))
+
+(def lower-left
+  (drawer #(identity 10) offset-height))
+
+(def center
+  (drawer
+    #(/ (- (.-width %1) (draw/width %2 %1)) 2)
+    #(/ (- (.-height %1) (draw/height %2 %1)) 2)))
 
 ;;;; Bundled Handler Functions 
 
