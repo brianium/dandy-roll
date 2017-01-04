@@ -104,7 +104,7 @@
 
 (defn to-blob
   "A handler that converts the watermarked canvas to a blob object. The given
-   function will "
+   function will be called with a blob object ater conversion is complete"
   [on-blobbed]
   (fn [{:keys [promise canvas]}]
     (-> (then promise data-url)
