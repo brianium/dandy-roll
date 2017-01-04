@@ -127,8 +127,8 @@
         handler (apply comp (reverse fns))]
     (-> (load-image resource)
         (then (partial draw/draw-image canvas))
-        (defer)
-        (handler))))
+        defer
+        handler)))
 
 (watermark "/target.jpeg"
   (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-right)

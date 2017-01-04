@@ -11,8 +11,8 @@
   "Converts a base64 decoded data string to a Uint8Array"
   [[media-type data]]
   (->> (map #(.charCodeAt %1) data)
-       (js/Uint8Array.)
-       (vector)))
+       js/Uint8Array.
+       vector))
 
 (defn- make-blob
   "Creates a JS Blob object from a media type and a Uint8Array"

@@ -11,9 +11,9 @@
   "Returns the type of x as a string"
   [x]
   (->> (type x)
-       (str)
+       str
        (re-find type-pattern)
-       (second)))
+       second))
 
 (defn- resolve-reader
   "Resolves a promise with an image created from a FileReader"

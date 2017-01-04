@@ -1,5 +1,4 @@
 (ns dandy-roll.promise)
-
 (defprotocol IDeferrable
   "A protocol to simplify working with native JS promises"
   (resolve [this value] "resolve a promise")
