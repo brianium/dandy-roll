@@ -1,9 +1,9 @@
-(ns dandy.core
-  (:require [dandy.promise :refer [then]]
-            [dandy.canvas :refer [get-canvas data-url]]
-            [dandy.load :refer [load-image]]
-            [dandy.draw :as draw]
-            [dandy.blob :refer [blob]]
+(ns dandy-roll.core
+  (:require [dandy-roll.promise :refer [then]]
+            [dandy-roll.canvas :refer [get-canvas data-url]]
+            [dandy-roll.load :refer [load-image]]
+            [dandy-roll.draw :as draw]
+            [dandy-roll.blob :refer [blob]]
             [goog.dom :as gdom]))
 
 (defn- make-image

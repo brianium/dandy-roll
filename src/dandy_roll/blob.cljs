@@ -1,4 +1,4 @@
-(ns dandy.blob)
+(ns dandy-roll.blob)
 
 (defonce url-pattern #"^data:([^;]+);base64,(.*)$")
 

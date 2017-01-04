@@ -1,4 +1,4 @@
-(ns dandy.promise)
+(ns dandy-roll.promise)
 
 (defprotocol IDeferrable
   "A protocol to simplify working with native JS promises"

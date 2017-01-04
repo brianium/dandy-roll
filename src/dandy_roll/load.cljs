@@ -1,5 +1,5 @@
-(ns dandy.load
-  (:require [dandy.promise :refer [promise then resolve]]
+(ns dandy-roll.load
+  (:require [dandy-roll.promise :refer [promise then resolve]]
             [goog.events :refer [listen]]))
 
 (defonce type-pattern #"function ([\w]+)")

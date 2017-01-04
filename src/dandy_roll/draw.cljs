@@ -1,4 +1,4 @@
-(ns dandy.draw)
+(ns dandy-roll.draw)
 
 (defrecord DeferredDraw [canvas promise])
 

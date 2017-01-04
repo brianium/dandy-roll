@@ -1,4 +1,4 @@
-(ns dandy.canvas)
+(ns dandy-roll.canvas)
 
 (defonce canvas-pool (atom #queue []))
 
