@@ -3,6 +3,7 @@
             [dandy.canvas :refer [get-canvas data-url]]
             [dandy.load :refer [load-image]]
             [dandy.draw :as draw]
+            [dandy.blob :refer [blob]]
             [goog.dom :as gdom]))
 
 (defn- make-image
@@ -78,6 +79,7 @@
 ;;;; Bundled Handler Functions 
 
 (defn with-image
+  "A handler that loads an additional image for drawing"
   [resource draw]
   (fn [{:keys [promise canvas]}]
     (-> (then promise #(load-image resource))
@@ -85,19 +87,29 @@
         (as-> promise (draw/defer canvas promise)))))
 
 (defn with-text
+  "A handler that supports drawing text"
   [text font-size font-family fill draw]
   (fn [{:keys [promise canvas]}]
     (-> (then promise #(draw (draw/make-text text font-size font-family fill) canvas))
         (as-> promise (draw/defer canvas promise)))))
 
 (defn append
-  "A handler that creates converts the canvas to an image
+  "A handler that converts the watermarked canvas to an image
    and appends it to a given element"
   [element]
   (fn [{:keys [promise canvas]}]
     (-> (then promise data-url)
         (then make-image)
         (then (fn [img] (gdom/appendChild element img))))))
+
+(defn to-blob
+  "A handler that converts the watermarked canvas to a blob object. The given
+   function will "
+  [on-blobbed]
+  (fn [{:keys [promise canvas]}]
+    (-> (then promise data-url)
+        (then blob)
+        (then on-blobbed))))
 
 ;;;; Core Watermark Function
 
@@ -124,4 +136,4 @@
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-right)
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-left)
   (with-text "Oh Hai" 28 "Helvetica" "#fff" (center { :alpha 0.5 }))
-  (append (.-body js/document)))
+  (to-blob (.-log js/console)))
