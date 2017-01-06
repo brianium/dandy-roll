@@ -5,3 +5,4 @@ figwheel_server.log
 \#*\#
 .\#*
 .nrepl-port
+out
