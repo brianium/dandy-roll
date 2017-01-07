@@ -9,7 +9,7 @@
       (let [url (str "data:image/png;base64,", (js/btoa "hi"))
             blob (b/blob url)]
         (is (= "image/png" (.-type blob)))
-        (comment (is (= 2 (.-size blob))) "todo: fix for phantomjs")))
+        (is (= 2 (.-size blob)))))
     
     (testing "with a malformed data url still returns blob"
       (let [blob (b/blob "oh hai")]
