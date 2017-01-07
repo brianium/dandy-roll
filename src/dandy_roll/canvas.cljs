@@ -21,6 +21,7 @@
    Fetching a data url
    causes the canvas to be released back to the pool."
   [canvas]
+  {:pre [(= (type canvas) js/HTMLCanvasElement)]}
   (let [url (.toDataURL canvas)
         context (.getContext canvas "2d")]
     (.clearRect context 0 0 (.-width canvas) (.-height canvas))

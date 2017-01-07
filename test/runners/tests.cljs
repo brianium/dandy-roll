@@ -1,2 +1,3 @@
 (ns runners.tests
-  (:require [dandy-roll.core-test]))
+  (:require [dandy-roll.blob-test]
+            [dandy-roll.canvas-test]))
