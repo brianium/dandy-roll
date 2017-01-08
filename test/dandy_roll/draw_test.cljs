@@ -3,6 +3,7 @@
             [devcards.core :refer-macros [deftest defcard]]
             [sablono.core :as sab]
             [goog.dom :as gdom]
+            [goog.dom.forms :as gforms]
             [dandy-roll.draw :as d]
             [dandy-roll.canvas :as c]))
 
@@ -22,11 +23,12 @@
    the API"
   (let [canvas (gdom/getElement "text-canvas")
         ctx (.getContext canvas "2d")
-        text-input (gdom/getElement "text-input")
-        text-value (.-value text-input)
-        alpha-range (gdom/getElement "text-alpha")
-        alpha-value (js/parseInt (.-value alpha-range) 10)
-        alpha-percent (/ alpha-value 100)
+        text-value (-> (gdom/getElement "text-input")
+                       (gforms/getValue))
+        alpha-percent (-> (gdom/getElement "text-alpha")
+                          (gforms/getValue)
+                          (js/parseInt)
+                          (/ 100))
         text (d/make-text text-value 20 "Arial" "#fff")]
     (do (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
         (d/draw text canvas 10 10 {:alpha alpha-percent}))))
@@ -66,12 +68,12 @@
                   :id "text-alpha"
                   :min "0"
                   :max "100"
+                  :defaultValue "100"
                   :onChange (fn [e]
                               (let [val (js/parseInt (.. e -target -value) 10)
                                     pct (/ val 100)]
                                 (draw-text)
                                 (swap! data assoc :alpha pct)))
-                  :value "100"
                   :style {"width" "235px"
                           "position" "relative"
                           "top" "5px"}}]]]]))
