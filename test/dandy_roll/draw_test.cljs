@@ -42,7 +42,7 @@
 (defcard drawing-watermark-text
   "### Watermarking a canvas with text
 
-  Text is drawn via the Drawable protocol method `draw`. Text
+  Text is drawn via the `Drawable` protocol method `draw`. Text
   is handled by the record `WatermarkText` implementing this protocol.
 
   Try typing something to see this protocol method at work."
