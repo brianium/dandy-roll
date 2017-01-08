@@ -6,8 +6,7 @@
   "Represents a resource being drawn on canvas"
   (draw [this canvas x y options] "Draws the resource to a canvas")
   (width [this canvas] "Returns the width of the drawable item")
-  (height [this canvas] "Returns the height of the drawable item")
-  (offset-y [this] "Returns a default y offset."))
+  (height [this canvas] "Returns the height of the drawable item"))
 
 ;; Define a record representing an image being
 ;; applied as a watermark
@@ -18,8 +17,7 @@
           (do (set! (.-globalAlpha ctx) alpha) ctx)
           (.drawImage ctx img x y)))
   (width [_ _] (.-width img))
-  (height [_ _] (.-height img))
-  (offset-y [_] 10))
+  (height [_ _] (.-height img)))
 
 (defn- make-font [size family]
   (str size "px " family))
@@ -32,7 +30,7 @@
             (set! (.-globalAlpha ctx) alpha)
             (set! (.-fillStyle ctx) fill)
             (set! (.-font ctx) (make-font font-size-px font-family))
-            (set! (.-textBaseline ctx) "middle")
+            (set! (.-textBaseline ctx) "top")
             ctx)
           (.fillText ctx text x y)))
   (width [_ canvas]
@@ -41,8 +39,7 @@
             (set! (.-font ctx) (make-font font-size-px font-family))
             (.measureText ctx text))
           (.-width ctx)))
-  (height [_ _] (/ 2 font-size-px))
-  (offset-y [_] 20))
+  (height [_ _] font-size-px))
 
 (defn make-image
   [img]

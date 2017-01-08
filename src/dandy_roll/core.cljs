@@ -23,9 +23,7 @@
   [canvas drawable]
   (-
     (.-height canvas)
-    (+
-      (draw/offset-y drawable)
-      (draw/height drawable canvas))))
+    (+ 10 (draw/height drawable canvas))))
 
 ;;;; Bundled Draw Functions
 
@@ -63,10 +61,10 @@
   (drawer offset-width offset-height))
 
 (def upper-right
-  (drawer offset-width #(draw/offset-y %2)))
+  (drawer offset-width #(identity 10)))
 
 (def upper-left
-  (drawer #(identity 10) #(draw/offset-y %2)))
+  (drawer #(identity 10) #(identity 10)))
 
 (def lower-left
   (drawer #(identity 10) offset-height))
@@ -136,4 +134,4 @@
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-right)
   (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-left)
   (with-text "Oh Hai" 28 "Helvetica" "#fff" (center { :alpha 0.5 }))
-  (to-blob (.-log js/console)))
+  (append (.-body js/document)))
