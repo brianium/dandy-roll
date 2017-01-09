@@ -1,9 +1,10 @@
 (ns dandy-roll.promise)
+
 (defprotocol IDeferrable
   "A protocol to simplify working with native JS promises"
   (resolve [this value] "resolve a promise")
-  (reject [this] "reject a promise")
-  (then [this fn] "handle the result of a promise"))
+  (reject [this reason] "reject a promise")
+  (then [this resolved] [this resolved rejected] "handle the result of a promise"))
 
 (defn- make-deferrable
   "A factory function for creating deferrables"
@@ -19,11 +20,14 @@
      (resolve [_ value]
        (.resolve deferred value)
        (make-deferrable deferred promise))
-     (reject [_]
-       (.reject deferred)
+     (reject [_ reason]
+       (.reject deferred reason)
        (make-deferrable deferred promise))
-     (then [_ fn]
-       (make-deferrable deferred (.then promise fn))))))
+     (then
+       ([_ resolved]
+        (make-deferrable deferred (.then promise resolved)))
+       ([_ resolved rejected]
+        (make-deferrable deferred (.then promise resolved rejected)))))))
 
 (defn promise
   "Creates a native JavaScript promise supporting the protocol IDeferrable"
