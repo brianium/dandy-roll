@@ -76,10 +76,8 @@
                   :max "100"
                   :defaultValue "100"
                   :onChange (fn [e]
-                              (let [val (js/parseInt (.. e -target -value) 10)
-                                    pct (/ val 100)]
-                                (draw-text)
-                                (swap! data assoc :alpha pct)))
+                              (draw-text)
+                              (swap! data assoc :alpha (alpha (.-target e))))
                   :style {"width" "235px"
                           "position" "relative"
                           "top" "5px"}}]]]]))
@@ -115,33 +113,49 @@
                   (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
                   (d/draw image canvas 10 10 {:alpha alpha-percent}))))))
 
+(defn image-code
+  [{:keys [name alpha]}]
+  (str
+    "(def promise (load-image \"" name "\"))\n"
+    "(-> (then promise #(make-image %1))\n"
+    "    (then (fn [image] (draw image 10 10 {:alpha " alpha "})))"))
+
 (defcard drawing-watermark-img
   "### Watermarking a canvas with an image
 
    Images are drawn via the `Drawable` protocl method `draw`. Images are handled
    by the record `WatermarkImage` implementing this protocol.
 
+   Since `WatermarkImage` is created with a loaded `Image` - it is often
+   used in conjunction with the functions contained in the `promise` and `load` namespaces -
+   that is `then` and `load-image`.
+
    Try uploading an image to see this protocol method at work."
-  (sab/html [:div
-             [:canvas {:id "image-canvas"
-                       :width "300"
-                       :height "300"
-                       :style {"backgroundColor" "#000"}}]
-             [:form
-              [:label "Watermark image: "]
-              [:input {:type "file"
-                       :id "image-input"
-                       :onChange (fn []
-                                   (let [file (image-file)]
-                                     (draw-image file)))}]
-              [:input {:type "range"
-                       :defaultValue "100"
-                       :id "image-alpha"
-                       :min "0"
-                       :max "100"
-                       :step "1"
-                       :onChange (fn []
-                                   (let [file (image-file)]
-                                     (draw-image file)))
-                       :style {"display" "block"
-                               "width" "295px"}}]]]))
+  (fn [data _]
+    (sab/html [:div
+               [:pre (image-code @data)]
+               [:canvas {:id "image-canvas"
+                         :width "300"
+                         :height "300"
+                         :style {"backgroundColor" "#000"}}]
+               [:form
+                [:label "Watermark image: "]
+                [:input {:type "file"
+                         :id "image-input"
+                         :onChange (fn []
+                                     (let [file (image-file)]
+                                       (swap! data assoc :name (.-name file))
+                                       (draw-image file)))}]
+                [:input {:type "range"
+                         :defaultValue "100"
+                         :id "image-alpha"
+                         :min "0"
+                         :max "100"
+                         :step "1"
+                         :onChange (fn [e]
+                                     (let [file (image-file)]
+                                       (swap! data assoc :alpha (alpha (.-target e)))
+                                       (draw-image file)))
+                         :style {"display" "block"
+                                 "width" "295px"}}]]]))
+  {:name "" :alpha 1.0})
