@@ -1,20 +1,29 @@
 (ns dandy-roll.draw-test
-  (:require [cljs.test :refer-macros [is testing]]
+  (:require [cljs.test :refer-macros [is testing async]]
             [devcards.core :refer-macros [deftest defcard]]
             [sablono.core :as sab]
             [goog.dom :as gdom]
             [goog.dom.forms :as gforms]
             [dandy-roll.draw :as d]
-            [dandy-roll.canvas :as c]))
+            [dandy-roll.canvas :as c]
+            [dandy-roll.promise :as p]
+            [dandy-roll.load :as l]))
 
 (deftest watermark-text-test
   (testing "dimensions of watermark text"
     (let [text (d/make-text "hello" 38 "Arial" "#fff")
-          canvas (c/make-canvas)
+          canvas (c/get-canvas)
           width (d/width text canvas)
           height (d/height text canvas)]
       (is (number? width))
       (is (= 38 height)))))
+
+(defn alpha [element]
+  "Get the alpha value from an element"
+  (-> (gdom/getElement element)
+      (gforms/getValue)
+      (js/parseInt)
+      (/ 100)))
 
 (defn draw-text []
   "Handles drawing text via the protocol method. I would love
@@ -25,13 +34,10 @@
         ctx (.getContext canvas "2d")
         text-value (-> (gdom/getElement "text-input")
                        (gforms/getValue))
-        alpha-percent (-> (gdom/getElement "text-alpha")
-                          (gforms/getValue)
-                          (js/parseInt)
-                          (/ 100))
+        alpha-percent (alpha "text-alpha")
         text (d/make-text text-value 20 "Arial" "#fff")]
-    (do (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
-        (d/draw text canvas 10 10 {:alpha alpha-percent}))))
+    (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
+    (d/draw text canvas 10 10 {:alpha alpha-percent})))
 
 (defn text-code
   [{:keys [text alpha]}]
@@ -78,3 +84,64 @@
                           "position" "relative"
                           "top" "5px"}}]]]]))
   {:text "" :alpha 1.0})
+
+(deftest watermark-image-test
+  (let [pr (l/load-image "/mark.jpeg")
+        canvas (c/get-canvas)]
+    (async done
+      (p/then pr (fn [img]
+                 (let [watermark (d/make-image img)
+                       width (d/width watermark canvas)
+                       height (d/height watermark canvas)]
+                   (is (= 90 width))
+                   (is (= 90 height))
+                   (done)))))))
+
+(defn image-file []
+  "Get the file object out of the image input"
+  (-> (gdom/getElement "image-input")
+      (aget "files")
+      (array-seq)
+      (first)))
+
+(defn draw-image [file]
+  "Given a file object representing a loaded image, draw it"
+  (let [pr (l/load-image file)
+        canvas (gdom/getElement "image-canvas")
+        ctx (.getContext canvas "2d")
+        alpha-percent (alpha "image-alpha")]
+    (-> (p/then pr d/make-image)
+        (p/then (fn [image]
+                  (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
+                  (d/draw image canvas 10 10 {:alpha alpha-percent}))))))
+
+(defcard drawing-watermark-img
+  "### Watermarking a canvas with an image
+
+   Images are drawn via the `Drawable` protocl method `draw`. Images are handled
+   by the record `WatermarkImage` implementing this protocol.
+
+   Try uploading an image to see this protocol method at work."
+  (sab/html [:div
+             [:canvas {:id "image-canvas"
+                       :width "300"
+                       :height "300"
+                       :style {"backgroundColor" "#000"}}]
+             [:form
+              [:label "Watermark image: "]
+              [:input {:type "file"
+                       :id "image-input"
+                       :onChange (fn []
+                                   (let [file (image-file)]
+                                     (draw-image file)))}]
+              [:input {:type "range"
+                       :defaultValue "100"
+                       :id "image-alpha"
+                       :min "0"
+                       :max "100"
+                       :step "1"
+                       :onChange (fn []
+                                   (let [file (image-file)]
+                                     (draw-image file)))
+                       :style {"display" "block"
+                               "width" "295px"}}]]]))
