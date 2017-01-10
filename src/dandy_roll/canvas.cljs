@@ -5,6 +5,10 @@
 (defn make-canvas []
   (.createElement js/document "canvas"))
 
+(defn clear-canvas-pool! []
+  "Empty the canvas pool"
+  (reset! canvas-pool #queue []))
+
 (defn get-canvas
   "Fetches canvas from a 'pool' of canvas elements."
   []

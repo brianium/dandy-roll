@@ -112,4 +112,49 @@
    ```")
 
 (defcard-doc
-  "## Core draw functions")
+  "## Core draw functions
+
+   `dandy-roll.core` ships with some commonly used draw functions, as well
+   as a useful helper for generating them. A draw function receives a `Drawable` record
+   and an `HTMLCanvasElement`. If the core draw functions will not suffice, then it is
+   pretty simple to create new ones.
+
+   ## `(drawer x-fn y-fn)`
+   
+   All core draw functions are defined via the `drawer` function. `x-fn` and `y-fn`
+   are functions that are called with the `HTMLCanvasElement` and the `Drawable` record
+   in that order. `x-fn` should return the x coordinate to draw at, and `y-fn` should return
+   the y coordinate draw at.
+
+   `drawer` returns a multi-arity function. Invoke the draw function with one argument to
+   return a function that performs the draw with a set of options:
+   
+   ```
+   (upper-left { :alpha 0.5 })
+   ```
+
+   Invoke the draw function with two arguments (a `Drawable` and an `HTMLCanvasElement`),
+   to immediately perform the draw operation with no configuration:
+
+   ```
+   (upper-left (make-image img) canvas)
+   ```
+   
+   `drawer` is only useful for creating simple draw functions that only deal in x and y
+    placement. For more complex draw operations, a custom function should used.
+
+    ```
+    ;; Move the watermark 10 pixels from the top and left edges
+    (def upper-left
+      (drawer #(identity 10) #(identity 10)))
+    ```
+    
+    The following functions are included:
+
+    * lower-left
+    * lower-right
+    * upper-left
+    * upper-right
+    * center
+    * center-top
+    * center-bottom")

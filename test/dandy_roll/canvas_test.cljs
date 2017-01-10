@@ -15,7 +15,9 @@
   (testing "it returns a canvas element"
     (let [canvas (c/get-canvas)]
       (is-canvas canvas)))
+  
   (testing "it pulls from a pool queue"
+    (c/clear-canvas-pool!)
     (let [canvas (c/get-canvas)
           url (c/data-url canvas)
           pooled (c/get-canvas)]
@@ -26,11 +28,13 @@
     (let [canvas (c/get-canvas)
           data-url (c/data-url canvas)]
       (is (string? data-url))))
+  
   (testing "it places the canvas back into the pool"
     (let [canvas (c/get-canvas)
           total (count @c/canvas-pool)
           url (c/data-url canvas)]
       (is (= (count @c/canvas-pool) (inc total)))))
+  
   (testing "it rejects non canvas elements"
     (is (thrown-with-msg?
           js/Error

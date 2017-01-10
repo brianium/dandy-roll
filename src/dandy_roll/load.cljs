@@ -31,6 +31,11 @@
   (-> (promise)
       (resolve img)))
 
+;; HTMLImageElement has the same behavior as an Image
+(defmethod load-image js/HTMLImageElement [img]
+  (-> (promise)
+      (resolve img)))
+
 ;; A string argument means we are loading a URL
 (defmethod load-image js/String [url]
   (let [p (promise)
