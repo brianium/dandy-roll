@@ -1,2 +1,5 @@
 (ns runners.browser
-  (:require [runners.tests]))
+  (:require [devcards.core]
+            [runners.tests]))
+
+(devcards.core/start-devcard-ui!)

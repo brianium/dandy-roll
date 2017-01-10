@@ -23,21 +23,13 @@
                                   [lein-doo "0.1.7"]
                                   [devcards "0.2.2"]]}}
   
-  :cljsbuild {:test-commands {"test" ["lein" "doo" "phantom" "test" "once"]}
-              
-              :builds [{:id "dev"
+  :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src"]
                         :figwheel true
                         :compiler {:main "dandy-roll.core"
                                    :output-to "resources/public/cljs/main.js"
                                    :output-dir "resources/public/cljs/out"
                                    :asset-path "cljs/out"}}
-                       
-                       {:id "test"
-                        :source-paths ["src" "test"]
-                        :compiler {:main runners.doo
-                                   :optimizations :none
-                                   :output-to "resources/public/cljs/tests/all-tests.js"}}
 
                        {:id "devcards-test"
                         :source-paths ["src" "test"]
@@ -47,5 +39,13 @@
                                    :asset-path "cljs/tests/out"
                                    :output-dir "resources/public/cljs/tests/out"
                                    :output-to "resources/public/cljs/tests/all-tests.js"
-                                   :source-map-timestamp true}}]
+                                   :source-map-timestamp true}}
+                       
+                       {:id "devcards-standalone"
+                        :source-paths ["src" "test"]
+                        :compiler {:main runners.browser
+                                   :devcards true
+                                   :optimizations :advanced
+                                   :asset-path "cljs/out"
+                                   :output-to "resources/public/cljs/out/dandy-roll.js"}}]
               })
