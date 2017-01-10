@@ -69,10 +69,26 @@
 (def lower-left
   (drawer #(identity 10) offset-height))
 
+(defn- center-x [canvas drawable]
+  "Calculate the horizontal center"
+  (/ (- (.-width canvas) (draw/width drawable canvas)) 2))
+
+(defn- center-y [canvas drawable]
+  "Calculate the vertical center"
+  (/ (- (.-height canvas) (draw/height drawable canvas)) 2))
+
 (def center
+  (drawer center-x center-y))
+
+(def center-top
+  (drawer center-x #(identity 10)))
+
+(def center-bottom
   (drawer
-    #(/ (- (.-width %1) (draw/width %2 %1)) 2)
-    #(/ (- (.-height %1) (draw/height %2 %1)) 2)))
+    center-x
+    #(-
+       (.-height %1)
+       (+ 10 (draw/height %2 %1)))))
 
 ;;;; Bundled Handler Functions 
 
@@ -127,11 +143,3 @@
         (then (partial draw/draw-image canvas))
         defer
         handler)))
-
-(watermark "/target.jpeg"
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" lower-right)
-  (with-image "/mark.jpeg" (lower-left { :alpha 0.5 }))
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-right)
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" upper-left)
-  (with-text "Oh Hai" 28 "Helvetica" "#fff" (center { :alpha 0.5 }))
-  (append (.-body js/document)))
