@@ -16,7 +16,7 @@
                 (done))))))
 
 (deftest load-image-from-url
-  (let [p (l/load-image "/mark.jpeg")]
+  (let [p (l/load-image "mark.jpeg")]
     (async done
       (then p (fn [img]
                 (is (re-find #"mark.jpeg" (.-src img)))
@@ -25,7 +25,7 @@
 (defcard image
   "Rendering an image to test loading an `HTMLImageElement`
 
-  ![testing](/mark.jpeg \"test\")")
+  ![testing](mark.jpeg \"test\")")
 
 (deftest load-an-html-image-element
   (let [p (l/load-image (.querySelector js/document "img[title=test]"))]

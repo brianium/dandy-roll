@@ -1,4 +1,5 @@
-(ns dandy-roll.promise)
+(ns dandy-roll.promise
+  (:import goog.Promise))
 
 (defprotocol IDeferrable
   "A protocol to simplify working with native JS promises"
@@ -10,9 +11,9 @@
   "A factory function for creating deferrables"
   ([]
    (let [deferred #js {}
-         promise (js/Promise. (fn [res rej]
-                                (set! (.-resolve deferred) res)
-                                (set! (.-reject deferred) rej)))]
+         promise (Promise. (fn [res rej]
+                             (set! (.-resolve deferred) res)
+                             (set! (.-reject deferred) rej)))]
      (make-deferrable deferred promise)))
   ([deferred, promise]
    (specify! promise

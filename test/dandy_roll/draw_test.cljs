@@ -84,7 +84,7 @@
   {:text "" :alpha 1.0})
 
 (deftest watermark-image-test
-  (let [pr (l/load-image "/mark.jpeg")
+  (let [pr (l/load-image "mark.jpeg")
         canvas (c/get-canvas)]
     (async done
       (p/then pr (fn [img]

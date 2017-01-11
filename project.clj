@@ -1,4 +1,4 @@
-(defproject brianium/dandy-roll "0.11"
+(defproject brianium/dandy-roll "0.13"
   :description "Watermarking in the browser"
   :url "https://github.com/brianium/dandy-roll"
   
@@ -11,17 +11,17 @@
                  [org.clojure/clojurescript "1.9.293"]]
   
   :plugins [[lein-figwheel "0.5.8"]
-            [cider/cider-nrepl "0.14.0"]
             [lein-doo "0.1.7"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]]
   
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs"]
   
-  :profiles {:dev {:dependencies [
-                                  [com.cemerick/piggieback "0.2.1"]
+  :profiles {:dev {:dependencies [[com.cemerick/piggieback "0.2.1"]
                                   [figwheel-sidecar "0.5.8"]
                                   [lein-doo "0.1.7"]
-                                  [devcards "0.2.2"]]}}
+                                  [devcards "0.2.2"]]
+                   :plugins [;[cider/cider-nrepl "0.14.0"]
+                             ]}}
   
   :jar-exclusions [#"test" #"resources" #"public"]
 

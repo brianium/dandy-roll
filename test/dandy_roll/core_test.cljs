@@ -20,23 +20,23 @@
   "### Example: watermarking with images
 
   ```
-  (watermark \"/target.jpeg\"
-    (with-image \"/mark.jpeg\" lower-right)
+  (watermark \"target.jpeg\"
+    (with-image \"mark.jpeg\" lower-right)
     (append node))
   ```"
   (dom-node
     (fn [_ node]
       (set! (.-innerHTML node) "")
       
-      (dr/watermark "/target.jpeg"
-        (dr/with-image "/mark.jpeg" dr/lower-right)
+      (dr/watermark "target.jpeg"
+        (dr/with-image "mark.jpeg" dr/lower-right)
         (dr/append node)))))
 
 (defcard watermarking-with-text
   "### Example: watermarking with text
 
   ```
-  (watermark \"/target.jpeg\"
+  (watermark \"target.jpeg\"
     (with-text \"I CAN HAZ\" 32 \"Impact\" \"#fff\" center-top)
     (with-text \"FUN CAT MEMES?\" 32 \"Impact\" \"#000\" center-bottom)
     (append node))
@@ -45,7 +45,7 @@
     (fn [_ node]
       (set! (.-innerHTML node) "")
 
-      (dr/watermark "/target.jpeg"
+      (dr/watermark "target.jpeg"
         (dr/with-text "I CAN HAZ" 32 "Impact" "#fff" dr/center-top)
         (dr/with-text "FUN CAT MEMES?" 32 "Impact" "#000" dr/center-bottom)
         (dr/append node)))))
@@ -58,16 +58,16 @@
    supports one option for now, and that is the `:alpha` option.
 
    ```
-   (watermark \"/target.jpeg\"
-     (with-image \"/mark.jpeg\" (upper-left { :alpha 0.6 }))
+   (watermark \"target.jpeg\"
+     (with-image \"mark.jpeg\" (upper-left { :alpha 0.6 }))
      (append node))
    ```"
   (dom-node
     (fn [_ node]
       (set! (.-innerHTML node) "")
       
-      (dr/watermark "/target.jpeg"
-        (dr/with-image "/mark.jpeg" (dr/upper-left { :alpha 0.6 }))
+      (dr/watermark "target.jpeg"
+        (dr/with-image "mark.jpeg" (dr/upper-left { :alpha 0.6 }))
         (dr/append node)))))
 
 (defcard-doc
