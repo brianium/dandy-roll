@@ -1,7 +1,5 @@
 (ns dandy-roll.blob)
 
-(defonce url-pattern #"^data:([^;]+);base64,(.*)$")
-
 (defn- decode
   "Decodes the data portion of a data url from base64"
   [[media-type data]]
