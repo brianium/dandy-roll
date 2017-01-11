@@ -51,5 +51,5 @@
                                    :devcards true
                                    :optimizations :advanced
                                    :asset-path "cljs/out"
-                                   :output-to "resources/public/cljs/out/dandy-roll.js"}}]
+                                   :output-to "resources/public/dandy-roll.js"}}]
               })
