@@ -135,6 +135,19 @@
    (watermark \"/target.jpeg\"
      (with-image \"/mark.jpeg\" lower-right)
      (to-blob upload))
+   ```
+
+   ## `(to-data-url on-converted)`
+
+   Invoking this function returns a handler that converts the watermarked result
+   to a string data url.
+   
+   ### Example:
+
+   ```
+   (watermark \"/target.jpeg\"
+     (with-image \"/mark.jpeg\" lower-right)
+     (to-data-url update-img))
    ```")
 
 (defcard-doc

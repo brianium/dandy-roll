@@ -116,12 +116,20 @@
 
 (defn to-blob
   "A handler that converts the watermarked canvas to a blob object. The given
-   function will be called with a blob object ater conversion is complete"
+   function will be called with a blob object after conversion is complete"
   [on-blobbed]
   (fn [{:keys [promise canvas]}]
     (-> (then promise data-url)
         (then blob)
         (then on-blobbed))))
+
+(defn to-data-url
+  "A handler that converts the watermarked canvas to a data url. The given
+   function will be called with the data url after conversion is complete"
+  [on-converted]
+  (fn [{:keys [promise canvas]}]
+    (-> (then promise data-url)
+        (then on-converted))))
 
 ;;;; Core Watermark Function
 
