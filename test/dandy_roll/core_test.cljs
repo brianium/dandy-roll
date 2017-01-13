@@ -50,16 +50,42 @@
         (dr/with-text "FUN CAT MEMES?" 32 "Impact" "#000" dr/center-bottom)
         (dr/append node)))))
 
+(defcard watermarking-with-text-options
+  "### Example: watermarking with text and extra options
+
+   The `WatermarkText` record supports a few more options than `WatermarkImage`
+   with regards to text. Primarily, the ability to stroke text by setting a `:strokeStyle`
+   option.
+
+   ```
+   (def stroked-top (center-top {:strokeStyle \"black\" :lineWidth 3}))
+   (def stroked-bottom (center-bottom {:strokeStyle \"white\" :lineWidth 3}))
+   (watermark \"target.jpeg\"
+     (with-text \"I CAN HAZ\" 32 \"Impact\" \"#fff\" stroked-top)
+     (with-text \"FUN CAT MEMES?\" 32 \"Impact\" \"#000\" stroked-bottom)
+     (append node))
+   ```"
+  (dom-node
+    (fn [_ node]
+      (let [stroked-top (dr/center-top {:strokeStyle "black" :lineWidth 2})
+            stroked-bottom (dr/center-bottom {:strokeStyle "white" :lineWidth 2})]
+        (set! (.-innerHTML node) "")
+
+        (dr/watermark "target.jpeg"
+          (dr/with-text "I CAN HAZ" 32 "Impact" "#fff" stroked-top)
+          (dr/with-text "FUNNY CAT MEMES?" 32 "Impact" "#000" stroked-bottom)
+          (dr/append node))))))
+
 (defcard watermarking-with-opacity
   "### Example: controlling watermark opacity
 
    The bundled handlers and any handler created using `dandy-roll.core/drawer`
-   can be invoked to return a configured handler. The `Drawable` protocol only
-   supports one option for now, and that is the `:alpha` option.
+   can be invoked to return a configured handler. Options can be any property belonging
+   to `CanvasRenderingContext2D`.
 
    ```
    (watermark \"target.jpeg\"
-     (with-image \"mark.jpeg\" (upper-left { :alpha 0.6 }))
+     (with-image \"mark.jpeg\" (upper-left { :globalAlpha 0.6 }))
      (append node))
    ```"
   (dom-node
@@ -67,7 +93,7 @@
       (set! (.-innerHTML node) "")
       
       (dr/watermark "target.jpeg"
-        (dr/with-image "mark.jpeg" (dr/upper-left { :alpha 0.6 }))
+        (dr/with-image "mark.jpeg" (dr/upper-left { :globalAlpha 0.6 }))
         (dr/append node)))))
 
 (defcard-doc
@@ -130,7 +156,7 @@
    return a function that performs the draw with a set of options:
    
    ```
-   (upper-left { :alpha 0.5 })
+   (upper-left { :globalAlpha 0.5 })
    ```
 
    Invoke the draw function with two arguments (a `Drawable` and an `HTMLCanvasElement`),
