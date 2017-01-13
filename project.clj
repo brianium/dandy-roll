@@ -1,4 +1,4 @@
-(defproject brianium/dandy-roll "0.20"
+(defproject brianium/dandy-roll "0.21"
   :description "Watermarking in the browser"
   :url "https://github.com/brianium/dandy-roll"
   
