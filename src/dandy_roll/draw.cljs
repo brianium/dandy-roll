@@ -8,33 +8,45 @@
   (width [this canvas] "Returns the width of the drawable item")
   (height [this canvas] "Returns the height of the drawable item"))
 
+(defn apply-context
+  "Applies a map of context properties to a canvas. Properties should
+   be valid context properties. Returns the canvas context"
+  [canvas properties]
+  (let [ctx (.getContext canvas "2d")]    
+    (doseq [[k v] properties]
+      (aset ctx (name k) v))
+    ctx))
+
+(defonce image-defaults {:globalAlpha 1.0})
+
 ;; Define a record representing an image being
 ;; applied as a watermark
 (defrecord WatermarkImage [img]
   Drawable
-  (draw [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
-    (as-> (.getContext canvas "2d") ctx
-          (do (set! (.-globalAlpha ctx) alpha) ctx)
-          (.drawImage ctx img x y)))
-  (width [_ _] (.-width img))
+  (draw [_ canvas x y config]
+    (let [properties (merge image-defaults config)
+          ctx (apply-context canvas properties)]
+      (.drawImage ctx img x y)))
+  (width [_ _] (.-width img))  
   (height [_ _] (.-height img)))
 
 (defn- make-font [size family]
   (str size "px " family))
 
-;; Define a record representing some text being
+(defonce text-defaults {:globalAlpha 1.0
+                        :textBaseline "top"})
+
+;; Define a record representing some text bpeing
 ;; applied as a watermark
 (defrecord WatermarkText [text font-size-px font-family fill]
   Drawable
-  (draw [_ canvas x y {:keys [alpha] :or {alpha 1.0}}]
-    (as-> (.getContext canvas "2d") ctx
-          (do
-            (set! (.-globalAlpha ctx) alpha)
-            (set! (.-fillStyle ctx) fill)
-            (set! (.-font ctx) (make-font font-size-px font-family))
-            (set! (.-textBaseline ctx) "top")
-            ctx)
-          (.fillText ctx text x y)))
+  (draw [_ canvas x y config]
+    (let [font (make-font font-size-px font-family)
+          properties (merge text-defaults config, {:fillStyle fill :font font})
+          ctx (apply-context canvas properties)]
+      (.fillText ctx text x y)
+      (when (:strokeStyle properties)
+        (.strokeText ctx text x y))))
   (width [_ canvas]
     (as-> (.getContext canvas "2d") ctx
           (do

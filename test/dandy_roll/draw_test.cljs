@@ -37,13 +37,13 @@
         alpha-percent (alpha "text-alpha")
         text (d/make-text text-value 20 "Arial" "#fff")]
     (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
-    (d/draw text canvas 10 10 {:alpha alpha-percent})))
+    (d/draw text canvas 10 10 {:globalAlpha alpha-percent})))
 
 (defn text-code
   [{:keys [text alpha]}]
   (str
     "(def text (make-text \"" text "\" 20 \"Arial\" \"#fff\"))\n"
-    "(draw text canvas 10 10 {:alpha " alpha "})"))
+    "(draw text canvas 10 10 {:globalAlpha " alpha "})"))
 
 (defcard drawing-watermark-text
   "### Watermarking a canvas with text
@@ -111,14 +111,14 @@
     (-> (p/then pr d/make-image)
         (p/then (fn [image]
                   (.clearRect ctx 0 0 (.-width canvas) (.-height canvas))
-                  (d/draw image canvas 10 10 {:alpha alpha-percent}))))))
+                  (d/draw image canvas 10 10 {:globalAlpha alpha-percent}))))))
 
 (defn image-code
   [{:keys [name alpha]}]
   (str
     "(def promise (load-image \"" name "\"))\n"
     "(-> (then promise #(make-image %1))\n"
-    "    (then (fn [image] (draw image 10 10 {:alpha " alpha "})))"))
+    "    (then (fn [image] (draw image 10 10 {:globalAlpha " alpha "})))"))
 
 (defcard drawing-watermark-img
   "### Watermarking a canvas with an image
@@ -127,7 +127,7 @@
    by the record `WatermarkImage` implementing this protocol.
 
    Since `WatermarkImage` is created with a loaded `Image` - it is often
-   used in conjunction with the functions contained in the `promise` and `load` namespaces -
+p   used in conjunction with the functions contained in the `promise` and `load` namespaces -
    that is `then` and `load-image`.
 
    Try uploading an image to see this protocol method at work."
