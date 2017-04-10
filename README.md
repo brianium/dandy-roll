@@ -1,4 +1,4 @@
-#Dandy Roll
+# Dandy Roll
 
 ### Current release:
 
@@ -77,7 +77,7 @@ and very visual, I opted for the amazing [Devcards](https://github.com/bhauman/d
 library by Bruce Hauman. It offers a hot reloaded test environment that doubles down as documentation
 and tests via `cljs.test`
 
-To run the tests during development just run `lein figwheel devcards-test` and hit `localhost:3449/tests.html"
+To run the tests during development just run `lein figwheel devcards-test` and hit `localhost:3449/tests.html`
 
 To run them right now head to the [standalone devcard deployment](https://brianium.github.io/dandy-roll/) on GitHub pages. Run tests
 for a namespace by clicking on that namespace's link.
